@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SchoolBot 🤖</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: #0f0f1a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .chat-container {
+            width: 420px;
+            background: #1a1a2e;
+            border-radius: 20px;
+            box-shadow: 0 0 40px rgba(0, 200, 255, 0.2);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #00c8ff, #7b2ff7);
+            padding: 18px 20px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chat-header span {
+            font-size: 1.6rem;
+        }
+
+        .chat-box {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            font-size: 0.92rem;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-msg {
+            background: linear-gradient(135deg, #00c8ff, #7b2ff7);
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+
+        .bot-msg {
+            background: #2a2a45;
+            color: #e0e0ff;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+        }
+
+        .typing {
+            color: #888;
+            font-style: italic;
+            font-size: 0.85rem;
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 14px;
+            background: #12122a;
+            gap: 10px;
+            border-top: 1px solid #2a2a45;
+        }
+
+        #userInput {
+            flex: 1;
+            padding: 12px 16px;
+            border-radius: 25px;
+            border: 1px solid #2a2a55;
+            background: #1f1f35;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        #userInput:focus {
+            border-color: #00c8ff;
+        }
+
+        #sendBtn {
+            background: linear-gradient(135deg, #00c8ff, #7b2ff7);
+            border: none;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        #sendBtn:hover {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="chat-container">
+        <div class="chat-header">
+            <span>🤖</span> SchoolBot — AI Assistant
+        </div>
+        <div class="chat-box" id="chatBox">
+            <div class="message bot-msg">
+                👋 Hi! I'm <strong>SchoolBot</strong>! Ask me about exams, timetables, teachers, transport, events, and
+                more!
+            </div>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="userInput" placeholder="Ask me anything about school..." />
+            <button id="sendBtn">➤</button>
+        </div>
+    </div>
+
+    <script>
+        const chatBox = document.getElementById('chatBox');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+
+        function addMessage(text, sender) {
+            const div = document.createElement('div');
+            div.className = `message ${sender === 'user' ? 'user-msg' : 'bot-msg'}`;
+            div.innerHTML = text;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        async function sendMessage() {
+            const msg = userInput.value.trim();
+            if (!msg) return;
+
+            addMessage(msg, 'user');
+            userInput.value = '';
+
+            const typing = document.createElement('div');
+            typing.className = 'message bot-msg typing';
+            typing.textContent = 'SchoolBot is typing...';
+            chatBox.appendChild(typing);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            try {
+                const res = await fetch('/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg })
+                });
+                const data = await res.json();
+                chatBox.removeChild(typing);
+                addMessage(data.reply, 'bot');
+            } catch {
+                chatBox.removeChild(typing);
+                addMessage('⚠️ Could not connect. Please check if the server is running.', 'bot');
+            }
+        }
+
+        sendBtn.addEventListener('click', sendMessage);
+        userInput.addEventListener('keypress', e => { if (e.key === 'Enter') sendMessage(); });
+    </script>
+</body>
+
+</html>
