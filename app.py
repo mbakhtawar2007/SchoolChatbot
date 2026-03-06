@@ -40,9 +40,15 @@ def ask_dialogflow(user_message):
 
     confidence = response.query_result.intent_detection_confidence
     answer = response.query_result.fulfillment_text
+    intent_name = response.query_result.intent.display_name
 
-    # Only return if confident enough (above 50%)
-    if confidence > 0.5 and answer:
+    # Ignore default fallback intent — let Gemini handle it
+    fallback_phrases = ["one more time", "sorry", "didn't get", 
+                        "i missed that", "say that again"]
+    is_fallback = "fallback" in intent_name.lower() or \
+                  any(p in answer.lower() for p in fallback_phrases)
+
+    if confidence > 0.5 and answer and not is_fallback:
         return answer
     return None
 
