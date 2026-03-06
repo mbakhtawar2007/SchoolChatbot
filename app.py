@@ -1,20 +1,27 @@
 from flask import Flask, render_template, request, jsonify
 import google.cloud.dialogflow as dialogflow
+from google.oauth2 import service_account
 import os
 import uuid
+import json
 
 app = Flask(__name__)
 
-# -----------------------------------------------
-# REPLACE THESE TWO VALUES WITH YOUR OWN:
-# -----------------------------------------------
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "Credentials.json"  # your JSON file name
-PROJECT_ID = "schoolbot-489316"  # paste your Project ID here
-# -----------------------------------------------
+PROJECT_ID = os.environ.get("PROJECT_ID", "schoolbot-489316")
+
+# Load credentials from environment variable (for deployment)
+# or from local JSON file (for local development)
+creds_json = os.environ.get("GOOGLE_CREDENTIALS")
+if creds_json:
+    creds_dict = json.loads(creds_json)
+    credentials = service_account.Credentials.from_service_account_info(creds_dict)
+else:
+    os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "Credentials.json"
+    credentials = None
 
 def ask_schoolbot(user_message):
     """Send a message to Dialogflow and get a response."""
-    session_client = dialogflow.SessionsClient()
+    session_client = dialogflow.SessionsClient(credentials=credentials)
     session_id = str(uuid.uuid4())  # unique session for each conversation
     session = session_client.session_path(PROJECT_ID, session_id)
 
