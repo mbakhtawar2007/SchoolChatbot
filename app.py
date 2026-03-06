@@ -22,7 +22,7 @@ else:
 # ── Gemini Setup ──────────────────────────────────────────
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "AIzaSyANCFDuGNn4SotBxNbiY6qA5WXiLJ4cb88")
 genai.configure(api_key=GEMINI_API_KEY)
-gemini_model = genai.GenerativeModel("gemini-1.5-flash")
+gemini_model = genai.GenerativeModel("gemini-2.0-flash")
 
 # ── Dialogflow ────────────────────────────────────────────
 def ask_dialogflow(user_message):
