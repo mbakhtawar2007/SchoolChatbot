@@ -1,10 +1,10 @@
 from flask import Flask, render_template, request, jsonify
 import google.cloud.dialogflow as dialogflow
 from google.oauth2 import service_account
-import google.generativeai as genai
 import os
 import uuid
 import json
+import requests
 
 app = Flask(__name__)
 
@@ -18,11 +18,6 @@ if creds_json:
 else:
     os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "Credentials.json"
     credentials = None
-
-# ── Gemini Setup ──────────────────────────────────────────
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "paste-your-gemini-key-here")
-genai.configure(api_key=GEMINI_API_KEY)
-gemini_model = genai.GenerativeModel("gemini-1.5-pro")
 
 # ── Dialogflow ────────────────────────────────────────────
 def ask_dialogflow(user_message):
@@ -42,8 +37,8 @@ def ask_dialogflow(user_message):
     answer = response.query_result.fulfillment_text
     intent_name = response.query_result.intent.display_name
 
-    # Ignore default fallback intent — let Gemini handle it
-    fallback_phrases = ["one more time", "sorry", "didn't get", 
+    # Ignore default fallback intent — let Wikipedia handle it
+    fallback_phrases = ["one more time", "sorry", "didn't get",
                         "i missed that", "say that again"]
     is_fallback = "fallback" in intent_name.lower() or \
                   any(p in answer.lower() for p in fallback_phrases)
@@ -52,17 +47,50 @@ def ask_dialogflow(user_message):
         return answer
     return None
 
-# ── Gemini Fallback ───────────────────────────────────────
-def ask_gemini(user_message):
-    """Fallback to Gemini if Dialogflow has no answer."""
-    prompt = f"""You are SchoolBot, a helpful AI assistant for a school.
-Answer this student's question briefly and clearly in 2-3 sentences.
-If it's not school-related, politely redirect them to ask school questions.
+# ── Wikipedia Fallback ────────────────────────────────────
+def ask_wikipedia(user_message):
+    """Search Wikipedia for an answer."""
+    try:
+        # Step 1 — Search for the topic
+        search_url = "https://en.wikipedia.org/w/api.php"
+        search_params = {
+            "action": "query",
+            "list": "search",
+            "srsearch": user_message,
+            "format": "json",
+            "srlimit": 1
+        }
+        search_res = requests.get(search_url, params=search_params, timeout=5)
+        search_data = search_res.json()
+        results = search_data.get("query", {}).get("search", [])
 
-Student question: {user_message}"""
+        if not results:
+            return "I couldn't find anything on that topic. Please ask the school office for more help!"
 
-    response = gemini_model.generate_content(prompt)
-    return response.text
+        # Step 2 — Get summary of top result
+        title = results[0]["title"]
+        summary_params = {
+            "action": "query",
+            "prop": "extracts",
+            "exintro": True,
+            "explaintext": True,
+            "titles": title,
+            "format": "json"
+        }
+        summary_res = requests.get(search_url, params=summary_params, timeout=5)
+        summary_data = summary_res.json()
+        pages = summary_data.get("query", {}).get("pages", {})
+        page = next(iter(pages.values()))
+        extract = page.get("extract", "")
+
+        # Return first 3 sentences only
+        sentences = extract.split(". ")
+        short_summary = ". ".join(sentences[:3]) + "."
+
+        return f"📖 According to Wikipedia: {short_summary}"
+
+    except Exception as e:
+        return "I couldn't find an answer right now. Please ask the school office for help!"
 
 # ── Routes ────────────────────────────────────────────────
 @app.route("/")
@@ -79,10 +107,9 @@ def chat():
         # Try Dialogflow first
         bot_reply = ask_dialogflow(user_msg)
 
-        # If Dialogflow doesn't know → use Gemini
+        # If Dialogflow doesn't know → use Wikipedia
         if not bot_reply:
-            bot_reply = ask_gemini(user_msg)
-            bot_reply = "🤖 " + bot_reply  # mark Gemini replies with robot emoji
+            bot_reply = ask_wikipedia(user_msg)
 
     except Exception as e:
         bot_reply = f"Connection error: {str(e)}"
