@@ -51,43 +51,46 @@ def ask_dialogflow(user_message):
 def ask_wikipedia(user_message):
     """Search Wikipedia for an answer."""
     try:
-        # Step 1 — Search for the topic
+        # Single API call — faster and more reliable
+        url = "https://en.wikipedia.org/api/rest_v1/page/summary/" + user_message.replace(" ", "_")
+        res = requests.get(url, timeout=8)
+
+        if res.status_code == 200:
+            data = res.json()
+            extract = data.get("extract", "")
+            if extract:
+                # Return first 2 sentences
+                sentences = extract.split(". ")
+                short = ". ".join(sentences[:2]) + "."
+                return f"📖 {short}"
+
+        # Fallback — try search API
         search_url = "https://en.wikipedia.org/w/api.php"
-        search_params = {
+        params = {
             "action": "query",
             "list": "search",
             "srsearch": user_message,
             "format": "json",
-            "srlimit": 1
+            "srlimit": 1,
+            "utf8": 1
         }
-        search_res = requests.get(search_url, params=search_params, timeout=10)
-        search_data = search_res.json()
-        results = search_data.get("query", {}).get("search", [])
+        res2 = requests.get(search_url, params=params, timeout=8)
+        data2 = res2.json()
+        results = data2.get("query", {}).get("search", [])
 
-        if not results:
-            return "I couldn't find anything on that topic. Please ask the school office for more help!"
+        if results:
+            title = results[0]["title"]
+            res3 = requests.get(
+                f"https://en.wikipedia.org/api/rest_v1/page/summary/{title.replace(' ', '_')}",
+                timeout=8
+            )
+            if res3.status_code == 200:
+                extract = res3.json().get("extract", "")
+                sentences = extract.split(". ")
+                short = ". ".join(sentences[:2]) + "."
+                return f"📖 {short}"
 
-        # Step 2 — Get summary of top result
-        title = results[0]["title"]
-        summary_params = {
-            "action": "query",
-            "prop": "extracts",
-            "exintro": True,
-            "explaintext": True,
-            "titles": title,
-            "format": "json"
-        }
-        summary_res = requests.get(search_url, params=summary_params, timeout=10)
-        summary_data = summary_res.json()
-        pages = summary_data.get("query", {}).get("pages", {})
-        page = next(iter(pages.values()))
-        extract = page.get("extract", "")
-
-        # Return first 3 sentences only
-        sentences = extract.split(". ")
-        short_summary = ". ".join(sentences[:3]) + "."
-
-        return f"📖 According to Wikipedia: {short_summary}"
+        return "I couldn't find information on that topic. Try rephrasing your question!"
 
     except Exception as e:
         return "I couldn't find an answer right now. Please ask the school office for help!"
