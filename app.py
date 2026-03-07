@@ -50,10 +50,11 @@ def ask_dialogflow(user_message):
 # ── Wikipedia Fallback ────────────────────────────────────
 def ask_wikipedia(user_message):
     """Search Wikipedia for an answer."""
+    headers = {"User-Agent": "SchoolChatbot/1.0 (https://schoolbot.vercel.app)"}
     try:
         # Single API call — faster and more reliable
         url = "https://en.wikipedia.org/api/rest_v1/page/summary/" + user_message.replace(" ", "_")
-        res = requests.get(url, timeout=8)
+        res = requests.get(url, headers=headers, timeout=10)
 
         if res.status_code == 200:
             data = res.json()
@@ -74,7 +75,7 @@ def ask_wikipedia(user_message):
             "srlimit": 1,
             "utf8": 1
         }
-        res2 = requests.get(search_url, params=params, timeout=8)
+        res2 = requests.get(search_url, params=params, headers=headers, timeout=10)
         data2 = res2.json()
         results = data2.get("query", {}).get("search", [])
 
@@ -82,7 +83,7 @@ def ask_wikipedia(user_message):
             title = results[0]["title"]
             res3 = requests.get(
                 f"https://en.wikipedia.org/api/rest_v1/page/summary/{title.replace(' ', '_')}",
-                timeout=8
+                headers=headers, timeout=10
             )
             if res3.status_code == 200:
                 extract = res3.json().get("extract", "")
@@ -93,6 +94,7 @@ def ask_wikipedia(user_message):
         return "I couldn't find information on that topic. Try rephrasing your question!"
 
     except Exception as e:
+        print(f"Wikipedia error: {e}")  # For debugging on Vercel logs
         return "I couldn't find an answer right now. Please ask the school office for help!"
 
 # ── Routes ────────────────────────────────────────────────
