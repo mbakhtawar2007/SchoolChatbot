@@ -60,7 +60,7 @@ def ask_wikipedia(user_message):
             "format": "json",
             "srlimit": 1
         }
-        search_res = requests.get(search_url, params=search_params, timeout=5)
+        search_res = requests.get(search_url, params=search_params, timeout=10)
         search_data = search_res.json()
         results = search_data.get("query", {}).get("search", [])
 
@@ -77,7 +77,7 @@ def ask_wikipedia(user_message):
             "titles": title,
             "format": "json"
         }
-        summary_res = requests.get(search_url, params=summary_params, timeout=5)
+        summary_res = requests.get(search_url, params=summary_params, timeout=10)
         summary_data = summary_res.json()
         pages = summary_data.get("query", {}).get("pages", {})
         page = next(iter(pages.values()))
