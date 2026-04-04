@@ -108,6 +108,18 @@ def ask_openrouter(user_message):
     except Exception as e:
         return "I couldn't find an answer right now. Please ask the school office for help!"
 
+
+def is_unhelpful_answer(answer):
+    if not answer:
+        return True
+
+    normalized = answer.lower()
+    generic_phrases = [
+        "couldn't find", "i couldn't find", "please ask the school office",
+        "i can only answer", "sorry", "i'm not sure", "cannot answer"
+    ]
+    return any(phrase in normalized for phrase in generic_phrases)
+
 # ── Routes ────────────────────────────────────────────────
 @app.route("/")
 def home():
@@ -151,6 +163,11 @@ def chat():
         # If Dialogflow doesn't know → use OpenRouter
         if not bot_reply:
             bot_reply = ask_openrouter(user_msg)
+            if is_unhelpful_answer(bot_reply):
+                bot_reply = (
+                    "I’m sorry, I couldn’t answer that confidently right now. "
+                    "Please ask another question about TGGHS admissions, timings, campuses, boards, exams, or contact the school office at 021-32810282."
+                )
 
     except Exception as e:
         bot_reply = f"Connection error: {str(e)}"
