@@ -11,7 +11,17 @@ intents = [
             "What is TGGHS?",
             "What is Graceful Grammar School?",
             "How old is the school?",
-            "Tell me about Graceful Grammar"
+            "Tell me about Graceful Grammar",
+            "tell me about the school",
+            "what is tggsh",
+            "what is graceful grammar school",
+            "how old is the school",
+            "tell me about graceful grammar",
+            "about the school",
+            "school information",
+            "what is the school",
+            "graceful grammar school",
+            "tggsh details"
         ],
         "response": "The Graceful Grammar Higher Secondary School (TGGHS) is a prestigious school in Saeedabad, Baldia Town, Karachi with 25 years of excellence! We have multiple campuses serving students from Montessori to O/A Levels."
     },
@@ -22,7 +32,15 @@ intents = [
             "When does school start?",
             "What time does school end?",
             "When do classes begin?",
-            "What are the timings?"
+            "What are the timings?",
+            "what are school hours",
+            "when does school start",
+            "what time does school end",
+            "when do classes begin",
+            "what are the timings",
+            "school timings",
+            "class hours",
+            "school schedule"
         ],
         "response": "School timings are 7:30 AM to 1:30 PM, Monday to Saturday."
     },
@@ -33,7 +51,17 @@ intents = [
             "How do I contact TGGHS?",
             "What is the school phone number?",
             "What is the school email?",
-            "What is the school website?"
+            "What is the school website?",
+            "what is the school contact",
+            "how do i contact tggsh",
+            "what is the school phone number",
+            "what is the school email",
+            "what is the school website",
+            "school contact",
+            "contact information",
+            "phone number",
+            "email address",
+            "website"
         ],
         "response": "You can contact TGGHS at:\n📧 Email: gracefulgrammar25@hotmail.com\n🌐 Website: www.tgghs.com\n📞 Campus I: 021-32810282\n📞 Campus II: 021-32891318\n📞 O Level Campus III: 021-32817376\n📞 Campus IV: 021-32891161\n📞 Campus V: 021-32810001-02"
     },
@@ -44,7 +72,16 @@ intents = [
             "What are the campus addresses?",
             "Where is TGGHS?",
             "How many campuses are there?",
-            "Where is Campus III?"
+            "Where is Campus III?",
+            "where is the school located",
+            "what are the campus addresses",
+            "where is tggsh",
+            "how many campuses are there",
+            "where is campus iii",
+            "school location",
+            "campus locations",
+            "addresses",
+            "how to reach school"
         ],
         "response": "TGGHS has 6 campuses in Karachi:\n🏫 Campus I: Plot 239-240, Sector-5-J, Saeedabad Baldia Town\n🏫 Campus II: Plot 249-250, Sec-5-J, Saeedabad Baldia Town\n🏫 O Level Campus III: Sec-4-A, ST-18, Saeedabad Baldia Town\n🏫 Campus IV: Tipu Sultan Road, Chandni Chowk\n🏫 Campus V: Plot 24-25, Sector 9C, New Saeedabad\n🏫 Naval Campus: St 20, Gulshan-e-Mazdoor\n🏫 Montessori Campus: 5J, Saeedabad Baldia Town"
     },
@@ -55,7 +92,17 @@ intents = [
             "What exam board is the school affiliated with?",
             "Does school offer O Levels?",
             "Is TGGHS affiliated with BISE?",
-            "What boards are available?"
+            "What boards are available?",
+            "which board does tggsh follow",
+            "what exam board is the school affiliated with",
+            "does school offer o levels",
+            "is tggsh affiliated with bise",
+            "what boards are available",
+            "exam boards",
+            "affiliated boards",
+            "o levels",
+            "a levels",
+            "bise karachi"
         ],
         "response": "TGGHS is affiliated with multiple exam boards:\n📚 BISE Karachi (Matric/SSC)\n📚 O Levels & A Levels\n📚 AKUEB (Aga Khan University Examination Board)\nStudents can choose the board that suits them best!"
     },
@@ -66,7 +113,16 @@ intents = [
             "Who runs the school?",
             "Who is the principal?",
             "Who founded the school?",
-            "Who is in charge of the school?"
+            "Who is in charge of the school?",
+            "who is the director of tggsh",
+            "who runs the school",
+            "who is the principal",
+            "who founded the school",
+            "who is in charge of the school",
+            "school director",
+            "school management",
+            "principal name",
+            "founder"
         ],
         "response": "TGGHS is led by:\n👨‍💼 Owner: Sir Muhammad Saleem\n👩‍💼 Director: Ma'am Tubi Naz\nThe school has been serving students for 25 years with excellence!"
     },
@@ -77,7 +133,17 @@ intents = [
             "What events does TGGHS have?",
             "Is there a prize distribution?",
             "When is sports day?",
-            "What activities does the school organize?"
+            "What activities does the school organize?",
+            "any upcoming events",
+            "what events does tggsh have",
+            "is there a prize distribution",
+            "when is sports day",
+            "what activities does the school organize",
+            "school events",
+            "prize distribution",
+            "sports day",
+            "cultural events",
+            "parent teacher meetings"
         ],
         "response": "TGGHS organizes exciting annual events including:\n🏆 Annual Prize Distribution Ceremony\n⚽ Sports Day\n🎭 Cultural Events & Competitions\n📢 Parent Teacher Meetings\nStay tuned to school notices for exact dates!"
     },
@@ -88,7 +154,16 @@ intents = [
             "Is there a school bus?",
             "How do I get to school?",
             "Does TGGHS have vans?",
-            "What about school transport?"
+            "What about school transport?",
+            "does school provide transport",
+            "is there a school bus",
+            "how do i get to school",
+            "does tggsh have vans",
+            "what about school transport",
+            "school bus",
+            "transport facility",
+            "vans",
+            "commute"
         ],
         "response": "TGGHS does not provide school transport. Students are responsible for their own commute. For directions to your nearest campus, please contact 021-32810282."
     },
@@ -99,7 +174,16 @@ intents = [
             "When does admission open?",
             "How to apply to TGGHS?",
             "What is the admission process?",
-            "Is admission open?"
+            "Is admission open?",
+            "how do i get admission",
+            "when does admission open",
+            "how to apply to tggsh",
+            "what is the admission process",
+            "is admission open",
+            "admission procedure",
+            "apply for school",
+            "enrollment",
+            "join school"
         ],
         "response": "For admissions at TGGHS, please contact your nearest campus:\n📞 021-32810282 or 021-32891318\n📧 gracefulgrammar25@hotmail.com\n🌐 www.tgghs.com\nOur staff will guide you through the process!"
     },
@@ -110,7 +194,16 @@ intents = [
             "What does TGGHS stand for?",
             "What is the vision of the school?",
             "What makes TGGHS special?",
-            "Why choose Graceful Grammar?"
+            "Why choose Graceful Grammar?",
+            "what is the school motto",
+            "what does tggsh stand for",
+            "what is the vision of the school",
+            "what makes tggsh special",
+            "why choose graceful grammar",
+            "school motto",
+            "vision",
+            "mission",
+            "special features"
         ],
         "response": "TGGHS motto is: To Which Height We Can Not Rise 🌟\nWith 25 years of excellence, TGGHS provides quality education through BISE, O/A Levels, and AKUEB — shaping the future leaders of Pakistan!"
     }

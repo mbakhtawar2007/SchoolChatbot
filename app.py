@@ -46,7 +46,7 @@ def ask_dialogflow(user_message):
     is_fallback = "fallback" in intent_name.lower() or \
                   any(p in answer.lower() for p in fallback_phrases)
 
-    if confidence > 0.5 and answer and not is_fallback:
+    if confidence > 0.3 and answer and not is_fallback:
         return answer
     return None
 
@@ -68,17 +68,11 @@ def ask_openrouter(user_message):
             "capital of", "weather", "news", "stock", "crypto", "movie", "football", "recipe", "how to make", "politics", "government",
             "oscar", "nobel", "general knowledge", "history of", "science project", "mathematics", "math problem", "translation"
         ]
-        school_context_terms = [
-            "tggsh", "school", "campus", "campuses", "admission", "admissions", "exam", "exams", "board", "boards", "timing", "hours", "fee", "fees",
-            "transport", "events", "management", "motto", "contact", "office", "teacher", "student", "curriculum", "teacher"
-        ]
 
         if any(phrase in normalized for phrase in out_of_scope_phrases):
             return "I can only answer questions about The Graceful Grammar Higher Secondary School (TGGHS). Please ask about admissions, timings, campuses, boards, exams, or school services."
 
-        if not any(term in normalized for term in school_context_terms):
-            return "I can only answer questions about The Graceful Grammar Higher Secondary School (TGGHS). Please ask about admissions, timings, campuses, boards, exams, or school services."
-
+        # Use OpenRouter to answer school-related queries not covered by Dialogflow.
         response = requests.post(
             "https://openrouter.ai/api/v1/chat/completions",
             headers={
@@ -90,14 +84,20 @@ def ask_openrouter(user_message):
                 "messages": [
                     {
                         "role": "system",
-                        "content": "You are SchoolBot, a helpful AI assistant for The Graceful Grammar Higher Secondary School (TGGHS) in Karachi, Pakistan. Answer student questions briefly in 2-3 sentences. Keep answers short and clear."
+                        "content": "You are SchoolBot, a helpful AI assistant for The Graceful Grammar Higher Secondary School (TGGHS) in Karachi, Pakistan. Answer only questions related to TGGHS. If a question is not about the school, politely say you only answer school-related questions. If the question is about the school but not in the pre-defined dialogue flow, infer the intent and answer as accurately as possible using the school's facts. Keep answers short, clear, and relevant."
+                    },
+                    {
+                        "role": "system",
+                        "content": "School facts: TGGHS has 6 campuses in Karachi, school hours are 7:30 AM to 1:30 PM Monday to Saturday, admissions contact is 021-32810282, owner is Sir Muhammad Saleem, director is Ma'am Tubi Naz, and the school serves Montessori to O/A Level students."
                     },
                     {
                         "role": "user",
-                        "content": user_message
+                        "content": "User question: '" + user_message + "'\nAnswer as TGGHS SchoolBot in 1-2 sentences."
                     }
                 ],
-                "max_tokens": 150
+                "temperature": 0.4,
+                "top_p": 0.9,
+                "max_tokens": 180
             },
             timeout=10
         )
@@ -136,6 +136,13 @@ def chat():
 
     if normalized in greeting_responses:
         return jsonify({"reply": greeting_responses[normalized]})
+
+    # Direct local answer for common school management questions
+    management_keywords = ["owner", "director", "principal", "founder", "saleem", "tubi", "naz"]
+    if any(term in normalized for term in management_keywords):
+        return jsonify({
+            "reply": "TGGHS is led by: Owner Sir Muhammad Saleem and Director Ma'am Tubi Naz. The school has been serving students for 25 years with excellence!"
+        })
 
     try:
         # Try Dialogflow first
